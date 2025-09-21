@@ -1,6 +1,3 @@
-
-
-
 def paid_fee_pct (volume, price, paid_fee):
     percentage = paid_fee/(price * volume) * 100
     return percentage

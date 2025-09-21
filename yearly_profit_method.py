@@ -38,11 +38,11 @@ def get_authorization_token(query={}):
 def get_order_list(market, page=1):
     url = "https://api.upbit.com/v1/orders"
     query = {
-        'market': market,
+        'market': market, # 종목: ETH/KRW, BTC/KRW
         'state': 'done',
         'page': page,
-        'order_by': 'desc',
-        'limit': 100,
+        'order_by': 'desc', # 매수, 매각
+        'limit': 100, # 최대 주문량
     }
     headers = {
         'Authorization': get_authorization_token(query)
@@ -80,9 +80,10 @@ def calculate_real_pnl(orders):
         executed_volume = float(order['executed_volume']) # volume을 float로 변환하여 executed_volume에 저장
         price = float(order['price']) # price를 float로 변환
         paid_fee = float(order['paid_fee']) # paid_fee를 float로 변환
+
         """
         executed_volume: 거래하려던 거래량
-        remainin_voluem: 거래가 실행되기 전에는 거래하려던 거래량 거래가 실행된 후에는 거래가 실행 되고 남은 거래량
+        remainin_voluem: 거래가 실행되기 전에는 거래하려던 거래량, 거래가 실행된 후에는 거래가 실행 되고 남은 거래량
         buy_volume: inventory에 있던 buy 재고량 
         matched_volume: 실제로 실행된 거래량. remaining_volume과 inventory에 있는 buy_volume 중 최저치
         """
@@ -92,14 +93,15 @@ def calculate_real_pnl(orders):
         elif order['side'] == 'ask': # 오더가 sell이면 executed_volume를 remaining_volume에 저장
             remaining_volume = executed_volume
             total_profit = 0.0 
-
-            while remaining_volume > 0 and inventory: # remaining_voluem이 0보다 크고 inventory가 있드면 ...
+            # remaining_voluem이 0보다 크고 inventory가 있으면 ...
+            while remaining_volume > 0 and inventory:
                 buy_price, buy_volume = inventory.popleft() # inventory에서 FIFO순으로 buy_price와 buy_volume을 추출
                 matched_volume = min(remaining_volume, buy_volume) # remainng_volume와 buy_volume 중 적을 것을 matched_volume에 저장
                 profit = (price - buy_price) * matched_volume # 이익을 계산
                 total_profit += profit # 누적이익을 계산
-
-                if buy_volume > matched_volume: # 만약 inventory에 있던 buy_volume이 matched volume보다 크면
+                
+                # 만약 inventory에 있던 buy_volume이 matched volume보다 크면
+                if buy_volume > matched_volume: 
                     inventory.appendleft((buy_price, buy_volume - matched_volume)) # buy_volume 중에 남은 부분은 inventory의 맨 처음( 맨 밑)에 append
                 remaining_volume -= matched_volume # remaining_volume에서 실제로 거래가 실행된 부분을 삭감. 
 

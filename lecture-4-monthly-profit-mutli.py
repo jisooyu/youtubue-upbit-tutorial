@@ -8,11 +8,9 @@ import os
 from urllib.parse import urlencode
 from collections import defaultdict, deque
 
-# 업비트 API 키 입력
-ACCESS_KEY = os.environ['UPBIT_OPEN_API_ACCESS_KEY']
-SECRET_KEY = os.environ['UPBIT_OPEN_API_SECRET_KEY']
-
 def get_authorization_token(query={}):
+    ACCESS_KEY = os.environ['UPBIT_OPEN_API_ACCESS_KEY']
+    SECRET_KEY = os.environ['UPBIT_OPEN_API_SECRET_KEY']
     payload = {
         'access_key': ACCESS_KEY,
         'nonce': str(uuid.uuid4()),
