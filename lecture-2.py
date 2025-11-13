@@ -5,20 +5,19 @@ import requests
 import uuid
 from urllib.parse import urlencode, unquote
 from dotenv import load_dotenv
-#%%
+
 # ✅ Load .env file explicitly
 load_dotenv()  
-#%%
+
 # api keys
 ACCESS_KEY = os.environ['UPBIT_OPEN_API_ACCESS_KEY']
 SECRET_KEY = os.environ['UPBIT_OPEN_API_SECRET_KEY']
-#%%
+
 # url, params, and headers
 # 나의 잔고, 최저 주문량, 거래통화, 거래수수료 등의 정보
 url = "https://api.upbit.com/v1/orders/chance"
 params = {"market": "KRW-ETH"}
 
-#%%
 # authorization
 query_string = unquote(urlencode(params, doseq=True)).encode("utf-8")
 m = hashlib.sha512()
@@ -38,7 +37,7 @@ authorization = 'Bearer {}'.format(jwt_token)
 headers = {
   'Authorization': authorization,
 }
-#%%
+
 # placing an order
 res = requests.get(url, params=params, headers=headers)
 result = res.json()
